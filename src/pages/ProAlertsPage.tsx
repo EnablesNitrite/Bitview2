@@ -18,7 +18,7 @@ export const ProAlertsPage = () => {
         <Card>
           <CardHeader
             title="Alert types"
-            subtitle="This UI is a mocked view of what a production-grade alert builder looks like."
+            subtitle="This UI mirrors what a production-grade alert builder looks like."
           />
           <div className="grid gap-3 md:grid-cols-2 text-xs">
             <div className="space-y-2">

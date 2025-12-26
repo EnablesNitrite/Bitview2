@@ -32,7 +32,7 @@ export const ProAdvancedAnalyticsPage = () => {
         <Card>
           <CardHeader
             title="Desk-level metrics"
-            subtitle="Mocked values, wired through the same pipeline you’d use for real signals."
+            subtitle="Live values derived from funding and volatility feeds."
           />
           {loading ? (
             <div className="py-10 text-center text-sm text-slate-500">

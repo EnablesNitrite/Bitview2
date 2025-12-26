@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react';
 import type { Asset, Exchange, FundingPoint } from '../types/core';
 import { Card, CardHeader } from '../components/ui/Card';
 import { InfoTooltip } from '../components/common/InfoTooltip';
-import { getBasicAssets, getExchanges } from '../utils/mock';
+import { basicAssets, supportedExchanges } from '../utils/markets';
 import { fetchFundingSeries } from '../services/fundingService';
 import { FundingLineChart } from '../components/charts/FundingLineChart';
 
 type Range = '24h' | '7d' | '30d' | '90d';
 
 export const HistoricalFundingPage = () => {
-  const assets = getBasicAssets();
-  const exchanges = getExchanges();
+  const assets = basicAssets;
+  const exchanges = supportedExchanges;
   const [asset, setAsset] = useState<Asset>('BTC');
   const [exchange, setExchange] = useState(exchanges[0]);
   const [range, setRange] = useState<Range>('7d');
@@ -23,7 +23,7 @@ export const HistoricalFundingPage = () => {
       setLoading(true);
       const base = range === '24h' ? 24 : range === '7d' ? 24 * 7 : 24 * 30;
       const points = Math.min(240, base);
-      setData(await fetchFundingSeries(asset, exchange));
+      setData(await fetchFundingSeries(asset, exchange, points));
       setLoading(false);
     };
     void load();

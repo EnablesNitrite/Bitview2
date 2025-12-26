@@ -1,27 +1,88 @@
 import { useEffect, useState } from 'react';
-import type { HeatmapCell } from '../types/core';
+import type { HeatmapCell, Asset, Exchange } from '../types/core';
 import { Card, CardHeader } from '../components/ui/Card';
 import { HeatmapGrid } from '../components/charts/HeatmapGrid';
-import {
-  mockFundingHeatmap,
-  mockExchangeHeatmap,
-  getBasicAssets,
-  getExchanges
-} from '../utils/mock';
-import type { Asset, Exchange } from '../types/core';
+import { basicAssets, supportedExchanges } from '../utils/markets';
+import { fetchFundingSeries, fetchLiveFunding } from '../services/fundingService';
+
+const buildFundingHeatmap = (
+  series: { timestamp: string; rate: number }[],
+  days = 30
+): HeatmapCell[] => {
+  const now = new Date();
+  const start = new Date(now.getTime() - (days - 1) * 24 * 60 * 60 * 1000);
+  const buckets = new Map<string, { sum: number; count: number }>();
+
+  series.forEach((point) => {
+    const date = new Date(point.timestamp);
+    if (date < start || date > now) return;
+    const dayOffset = Math.floor(
+      (date.getTime() - start.getTime()) / (24 * 60 * 60 * 1000)
+    );
+    const dayLabel = `${dayOffset - (days - 1)}d`;
+    const hour = date.getUTCHours();
+    const key = `${dayLabel}-${hour}`;
+    const bucket = buckets.get(key) ?? { sum: 0, count: 0 };
+    bucket.sum += point.rate;
+    bucket.count += 1;
+    buckets.set(key, bucket);
+  });
+
+  const cells: HeatmapCell[] = [];
+  for (let d = 0; d < days; d += 1) {
+    const dayLabel = `${d - (days - 1)}d`;
+    for (let h = 0; h < 24; h += 1) {
+      const key = `${dayLabel}-${h}`;
+      const bucket = buckets.get(key);
+      const value = bucket ? bucket.sum / bucket.count : 0;
+      cells.push({ x: dayLabel, y: `${h}:00`, value });
+    }
+  }
+  return cells;
+};
+
+const buildExchangeHeatmap = (
+  assets: Asset[],
+  exchanges: Exchange[],
+  snapshots: {
+    asset: Asset;
+    exchange: Exchange;
+    currentRate: number;
+  }[]
+): HeatmapCell[] => {
+  const cells: HeatmapCell[] = [];
+  const lookup = new Map<string, number>();
+  snapshots.forEach((snap) => {
+    lookup.set(`${snap.asset}-${snap.exchange}`, snap.currentRate);
+  });
+
+  exchanges.forEach((exchange) => {
+    assets.forEach((asset) => {
+      const value = lookup.get(`${asset}-${exchange}`) ?? 0;
+      cells.push({ x: asset, y: exchange, value });
+    });
+  });
+
+  return cells;
+};
 
 export const HeatmapsPage = () => {
   const [fundingHmap, setFundingHmap] = useState<HeatmapCell[]>([]);
   const [exchangeHmap, setExchangeHmap] = useState<HeatmapCell[]>([]);
   const [asset, setAsset] = useState<Asset>('BTC');
   const [exchange, setExchange] = useState<Exchange>('Binance');
-  const assets = getBasicAssets();
-  const exchanges = getExchanges();
+  const assets = basicAssets;
+  const exchanges = supportedExchanges;
 
   useEffect(() => {
-    setFundingHmap(mockFundingHeatmap());
-    setExchangeHmap(mockExchangeHeatmap());
-  }, [asset, exchange]);
+    const load = async () => {
+      const series = await fetchFundingSeries(asset, exchange, 200);
+      setFundingHmap(buildFundingHeatmap(series));
+      const snapshots = await fetchLiveFunding();
+      setExchangeHmap(buildExchangeHeatmap(assets, exchanges, snapshots));
+    };
+    void load();
+  }, [asset, exchange, assets, exchanges]);
 
   return (
     <div className="space-y-4">
@@ -75,11 +136,7 @@ export const HeatmapsPage = () => {
             many days.
           </span>
         </div>
-        <HeatmapGrid
-          data={fundingHmap}
-          xLabel="Days"
-          yLabel="Hour of day"
-        />
+        <HeatmapGrid data={fundingHmap} xLabel="Days" yLabel="Hour of day" />
       </Card>
 
       <Card>
@@ -87,11 +144,7 @@ export const HeatmapsPage = () => {
           title="Cross-exchange funding map"
           subtitle="Rows are exchanges, columns are assets. Colors show the latest funding print."
         />
-        <HeatmapGrid
-          data={exchangeHmap}
-          xLabel="Asset"
-          yLabel="Exchange"
-        />
+        <HeatmapGrid data={exchangeHmap} xLabel="Asset" yLabel="Exchange" />
       </Card>
     </div>
   );

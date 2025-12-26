@@ -38,7 +38,7 @@ export const VolatilityPage = () => {
       <Card>
         <CardHeader
           title="Realized volatility"
-          subtitle="Rolling realized volatility approximated from mock price paths."
+          subtitle="Rolling realized volatility from spot price history."
           actions={
             <select
               value={asset}

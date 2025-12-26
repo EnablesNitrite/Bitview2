@@ -3,7 +3,7 @@ import { ProOnly } from '../components/common/ProLock';
 import { Button } from '../components/ui/Button';
 
 export const ProExportPage = () => {
-  const mockApiKey = 'pl_live_xxxxxxxxxxxxxxxxxxxxx';
+  const apiKeyPlaceholder = 'YOUR_API_KEY_HERE';
 
   return (
     <div className="space-y-4">
@@ -58,7 +58,7 @@ export const ProExportPage = () => {
               <div>
                 <div className="text-slate-300 mb-1">Read-only key</div>
                 <div className="rounded-xl bg-slate-950/80 border border-slate-800 px-3 py-2 font-mono text-[0.7rem] text-emerald-300">
-                  {mockApiKey}
+                  {apiKeyPlaceholder}
                 </div>
               </div>
               <div>
@@ -74,7 +74,7 @@ export const ProExportPage = () => {
                 <div className="text-slate-300 mb-1">Usage</div>
                 <pre className="rounded-xl bg-slate-950/80 border border-slate-800 px-3 py-2 text-[0.65rem] text-slate-200 overflow-auto">
 GET /v1/funding?asset=BTC&amp;exchange=Binance
-Authorization: Bearer {mockApiKey}
+Authorization: Bearer {apiKeyPlaceholder}
                 </pre>
               </div>
             </div>

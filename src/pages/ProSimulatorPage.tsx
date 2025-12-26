@@ -3,11 +3,11 @@ import type { Exchange } from '../types/core';
 import { Card, CardHeader } from '../components/ui/Card';
 import { ProOnly } from '../components/common/ProLock';
 import { Button } from '../components/ui/Button';
-import { getExchanges } from '../utils/mock';
+import { supportedExchanges } from '../utils/markets';
 import { formatNumber, formatPercent } from '../utils/formatters';
 
 export const ProSimulatorPage = () => {
-  const exchanges = getExchanges();
+  const exchanges = supportedExchanges;
   const [capital, setCapital] = useState(100_000);
   const [leverage, setLeverage] = useState(3);
   const [durationDays, setDurationDays] = useState(7);

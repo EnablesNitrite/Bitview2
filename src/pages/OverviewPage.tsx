@@ -67,7 +67,7 @@ export const OverviewPage = () => {
         <Card>
           <CardHeader
             title="BTC funding snapshot"
-            subtitle="Average across Binance, Bybit, OKX, Bitget and Deribit."
+            subtitle="Average across Binance, Bybit, and OKX."
           />
           <div className="space-y-2 text-sm">
             <div className="flex items-baseline justify-between">
@@ -143,7 +143,7 @@ export const OverviewPage = () => {
         <Card>
           <CardHeader
             title="BTC vs ETH realized volatility"
-            subtitle="30-day realized volatility, approximated from mock price paths."
+            subtitle="30-day realized volatility from spot price history."
           />
           <div className="grid gap-4 md:grid-cols-2">
             <div className="h-56">

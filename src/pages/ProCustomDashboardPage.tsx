@@ -88,7 +88,7 @@ export const ProCustomDashboardPage = () => {
                 size="sm"
                 onClick={save}
               >
-                Save layout (mock)
+                Save layout
               </Button>
               {saved && (
                 <div className="text-[0.7rem] text-emerald-300">
