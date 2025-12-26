@@ -4,7 +4,7 @@ import { Card, CardHeader } from '../components/ui/Card';
 import { fetchArbitrageOpps } from '../services/arbitrageService';
 import { formatPercent } from '../utils/formatters';
 import { ProOnly } from '../components/common/ProLock';
-import { getAllAssets } from '../utils/mock';
+import { basicAssets } from '../utils/markets';
 
 export const ProArbitragePage = () => {
   const [data, setData] = useState<ArbitrageOpportunity[]>([]);
@@ -13,7 +13,7 @@ export const ProArbitragePage = () => {
   const [risk, setRisk] =
     useState<ArbitrageOpportunity['riskLevel'] | 'any'>('any');
   const [loading, setLoading] = useState(true);
-  const assets = getAllAssets();
+  const assets = basicAssets;
 
   useEffect(() => {
     const load = async () => {
@@ -104,7 +104,7 @@ export const ProArbitragePage = () => {
           </div>
           {loading ? (
             <div className="h-48 flex items-center justify-center text-sm text-slate-500">
-              Scanning venues for mock opportunities…
+              Scanning venues for opportunities…
             </div>
           ) : filtered.length === 0 ? (
             <div className="h-48 flex items-center justify-center text-sm text-slate-500">

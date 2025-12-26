@@ -4,7 +4,7 @@ import { useLiveFunding } from '../hooks/useLiveFunding';
 import { Card, CardHeader } from '../components/ui/Card';
 import { InfoTooltip } from '../components/common/InfoTooltip';
 import { Button } from '../components/ui/Button';
-import { getBasicAssets, getExchanges } from '../utils/mock';
+import { basicAssets, supportedExchanges } from '../utils/markets';
 import { formatPercent, formatDateTime } from '../utils/formatters';
 
 type SortKey = 'asset' | 'exchange' | 'currentRate';
@@ -17,8 +17,8 @@ export const FundingRatesPage = () => {
   const [sortKey, setSortKey] = useState<SortKey>('currentRate');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
-  const assets = getBasicAssets();
-  const exchanges = getExchanges();
+  const assets = basicAssets;
+  const exchanges = supportedExchanges;
 
   const rows = useMemo(() => {
     if (!data) return [];
@@ -64,8 +64,8 @@ export const FundingRatesPage = () => {
             Live funding rates
           </h1>
           <p className="mt-1 text-xs text-slate-400 max-w-xl">
-            Snapshot of BTC and ETH perp funding across Binance, Bybit, OKX,
-            Bitget and Deribit. Use the filters to isolate assets, venues and
+            Snapshot of BTC and ETH perp funding across Binance, Bybit, and
+            OKX. Use the filters to isolate assets, venues and
             extreme regimes.
           </p>
         </div>

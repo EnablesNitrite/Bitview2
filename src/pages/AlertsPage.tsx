@@ -8,12 +8,12 @@ import type {
 import { Card, CardHeader } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useAlertsStore } from '../store/alertStore';
-import { getBasicAssets, getExchanges } from '../utils/mock';
+import { basicAssets, supportedExchanges } from '../utils/markets';
 import { InfoTooltip } from '../components/common/InfoTooltip';
 
 export const AlertsPage = () => {
-  const assets = getBasicAssets();
-  const exchanges = getExchanges();
+  const assets = basicAssets;
+  const exchanges = supportedExchanges;
   const [type, setType] = useState<BasicAlertType>('fundingAbove');
   const [asset, setAsset] = useState<Asset>('BTC');
   const [exchange, setExchange] = useState<Exchange | 'any'>('any');
@@ -54,7 +54,7 @@ export const AlertsPage = () => {
       <Card>
         <CardHeader
           title="Create basic alert"
-          subtitle="Funding & volatility triggers with Email or Telegram delivery (mock UI)."
+          subtitle="Funding & volatility triggers with Email or Telegram delivery."
         />
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-3 text-xs">

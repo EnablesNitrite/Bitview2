@@ -2,7 +2,7 @@
 
 A sleek, quant-style funding rates & volatility analytics dashboard built with **Vite + React + TypeScript + Tailwind**.
 
-The app ships with a **Basic (Free) plan** and a **Pro (Paid) plan**. For this demo, all data is mocked but the architecture is ready to be wired to real APIs (funding, volatility, arbitrage, alerts, exports).
+The app ships with a **Basic (Free) plan** and a **Pro (Paid) plan**. Funding, volatility, and arbitrage views now pull from real public APIs, with placeholders only for optional API keys.
 
 ---
 
@@ -76,7 +76,7 @@ funding-dashboard/
      │  └─ core.ts
      └─ utils/
         ├─ formatters.ts
-        └─ mock.ts
+        └─ markets.ts
 ```
 
 ---
@@ -138,7 +138,7 @@ Accessible without gating:
   - Exchange comparison heatmap (exchange vs asset)
 - **Simple alerts** (`/app/alerts`)
   - Conditions: `funding > X%`, `funding < 0`, `high volatility`
-  - Asset & exchange selectors, Email/Telegram/Discord delivery (mock)
+  - Asset & exchange selectors, Email/Telegram/Discord delivery
   - Up to **2 active alerts** with clear free-tier limit
 - **Settings** (`/app/settings`)
   - Local toggle between Basic & Pro (no auth; demo only)
@@ -148,7 +148,7 @@ Accessible without gating:
 Visible in the UI with **Pro** badges and blur/lock when on Basic. In this demo, toggle to Pro in **Settings**.
 
 - **Cross-exchange arbitrage engine** (`/app/pro/arbitrage`)
-  - Table of mock opportunities (asset, long/short venue, spread, estimated net yield, risk profile)
+  - Table of opportunities derived from live funding spreads (asset, long/short venue, spread, estimated net yield, risk profile)
   - Filters: asset, min spread, risk tolerance
 - **Arbitrage PnL simulator** (`/app/pro/simulator`)
   - Inputs: capital, leverage, duration, funding spread, fees, volatility, exchange pair
@@ -158,45 +158,43 @@ Visible in the UI with **Pro** badges and blur/lock when on Basic. In this demo,
   - Simple regime classifier (low / expansion / panic / high-vol consolidation)
   - Placeholders for returns histogram & GARCH/IV
 - **Advanced analytics** (`/app/pro/analytics`)
-  - Cards for composite metrics: Funding Risk Index, Funding/Vol Ratio, Negative Funding Streak, Mean Reversion Probability, etc.
+  - Cards for composite metrics: Funding Risk Index, Funding/Vol Ratio, Negative Funding Streak, Mean Reversion Probability, etc. powered by live feeds
 - **Pro alerts** (`/app/pro/alerts`)
   - UX copy for arbitrage, spread, funding reversal & regime-change alerts
   - Extended delivery options (Telegram, Discord, Email, SMS placeholder)
 - **CSV / API export** (`/app/pro/export`)
-  - Mock buttons for CSV/image exports
+  - Buttons for CSV/image exports (placeholder UX)
   - API key placeholder panel with scopes and sample request
 - **Custom dashboard layout** (`/app/pro/custom`)
   - Local layout configuration for key widgets
   - Theme toggle (dark/light; dark fully designed)
-  - “Save layout” mock with confirmation
+  - “Save layout” with confirmation
 
 ---
 
-## 4. Wiring real data
+## 4. Live data sources
 
-The app is structured so you can easily replace the mocked data with real APIs:
+The dashboard now fetches live data in the service layer:
 
-- **Funding**
+- **Funding (Binance, Bybit, OKX)**
   - `services/fundingService.ts`
     - `fetchLiveFunding()`
     - `fetchFundingSeries(asset, exchange)`
     - `fetchFundingAnalytics(asset, exchange)`
-- **Volatility**
+- **Volatility (CoinCap price history)**
   - `services/volatilityService.ts`
     - `fetchVolatilitySeries(asset, days)`
-- **Arbitrage**
+- **Arbitrage (derived from funding snapshots)**
   - `services/arbitrageService.ts`
     - `fetchArbitrageOpps()`
 
-Each currently returns mocked data generated in `utils/mock.ts`. You can swap the implementation with real HTTP calls (e.g. `fetch`, `axios`, or a dedicated client) and keep the rest of the app unchanged.
-
-**API keys & secrets** should live in environment variables such as:
+Optional API keys should live in environment variables such as:
 
 ```bash
-VITE_FUNDING_API_KEY=YOUR_KEY_HERE
+VITE_COINCAP_API_KEY=YOUR_KEY_HERE
 ```
 
-…and be accessed via `import.meta.env.VITE_FUNDING_API_KEY` inside the service files. For this demo they are left as placeholders and not required to run.
+…and be accessed via `import.meta.env.VITE_COINCAP_API_KEY` inside the service files. They are optional for public endpoints.
 
 ---
 
@@ -216,7 +214,7 @@ VITE_FUNDING_API_KEY=YOUR_KEY_HERE
 
 ## 6. Known limitations
 
-- All numbers are **mocked**; they are illustrative only.
+- Live data depends on public API availability and rate limits.
 - No persistence beyond in-memory state for alerts / layout (localStorage could be added easily).
 - No authentication or billing — the plan is toggled locally in Settings.
 
